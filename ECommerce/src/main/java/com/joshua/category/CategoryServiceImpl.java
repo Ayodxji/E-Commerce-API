@@ -1,5 +1,6 @@
 package com.joshua.category;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -7,27 +8,32 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    private List<Category> categories = new ArrayList<>();
-    private int categoryId = 1;
+//    private List<Category> categories = new ArrayList<>();
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Override
     public List<Category> getAllCategories() {
-        return categories;
+
+        return categoryRepository.findAll();
     }
 
     @Override
     public String createCategory(Category category) {
-        category.setCategoryId(categoryId++);
-        categories.add(category);
+
+        categoryRepository.save(category);
         return "Category Added Successfully";
     }
 
     public String deleteCategory(int categoryId) {
-        for (Category category : categories) {
+        for (Category category : categoryRepository.findAll()) {
             if (category.getCategoryId() == categoryId) {
-                categories.remove(category);
+                categoryRepository.delete(category);
                 return "Category with " + categoryId + " deleted";
             }
         }
@@ -36,12 +42,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     public String updateCategory(Category updatecategory, int categoryId) {
-        for (Category category : categories) {
-            if (category.getCategoryId() == categoryId) {
-                category.setCategoryName(updatecategory.getCategoryName());
-                return "Category with " + categoryId + "updated Successfully";
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category Not Found");
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category Not Found"));
+        category.setCategoryName(updatecategory.getCategoryName());
+        categoryRepository.save(category);
+        return "Category Updated Successfully";
     }
 }
