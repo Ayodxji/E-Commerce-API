@@ -1,5 +1,6 @@
 package com.joshua.category;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class CategoryController {
     }
 
     @PostMapping("/public/categories")
-    public ResponseEntity<String> createCategory(@RequestBody Category category){
+    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category){
 
         String status = categoryService.createCategory(category);
         return ResponseEntity.status(HttpStatus.CREATED).body("Category Added");
@@ -34,20 +35,15 @@ public class CategoryController {
     }
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity deleteCategory(@PathVariable int categoryId){
-        try {
+
             String status = categoryService.deleteCategory(categoryId);
-            return new ResponseEntity(status, HttpStatusCode.valueOf(200));
-        }catch (ResponseStatusException e){
-            return new ResponseEntity(e.getMessage(),e.getStatusCode());
-        }
+
+            return ResponseEntity.status(HttpStatus.OK).body(status);
     }
     @PutMapping("/public/categories/{categoryId}")
-    public ResponseEntity<String> updateCategory(@RequestBody Category category,@PathVariable int categoryId){
-        try{
+    public ResponseEntity<String> updateCategory(@Valid @RequestBody Category category,@PathVariable int categoryId){
             String responseMessage = categoryService.updateCategory(category,categoryId);
-            return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
-        }catch (ResponseStatusException e){
-            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
-        }
+            return new ResponseEntity<>("Category with category id: "+categoryId,HttpStatus.OK);
+
     }
 }
