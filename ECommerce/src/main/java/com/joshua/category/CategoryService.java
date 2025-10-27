@@ -1,12 +1,14 @@
 package com.joshua.category;
 
+import com.joshua.payload.CategoryDTO;
+import com.joshua.payload.CategoryResponse;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> getAllCategories();
-    String createCategory(Category category);
-    String deleteCategory(int categoryId);
-    String updateCategory(Category category,int categoryId);
+    CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize,String sortBy,String sortOrder);
+    CategoryDTO createCategory(CategoryDTO categoryDTO);
+    CategoryDTO deleteCategory(int categoryId);
+    CategoryDTO updateCategory(CategoryDTO categoryDTO,int categoryId);
 }
